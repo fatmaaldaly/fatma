@@ -1,31 +1,21 @@
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import pickle
-import flask
-from flask import request
-from sklearn.linear_model import LogisticRegression
 
-app = flask.Flask(__name__)
+app = Flask(__name__)
+CORS(app)  # This enables CORS for all routes and origins
 
-# Load our trained model from a file we created earlier
-with open("iris_model.pkl", 'rb') as file:  
-    model = pickle.load(file)
+# Load the trained model
+with open("iris_model.pkl", "rb") as f:
+    model = pickle.load(f)
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    # grabbing a set of wine features from the request's body
-    feature_array = request.get_json()['feature_array']
-
-    # our model rates the wine based on the input array
+    data = request.json
+    feature_array = data["feature_array"]
+    
     prediction = model.predict([feature_array]).tolist()
-    
-    # preparing a response object and storing the model's predictions
-    response = {}
-    response['prediction'] = prediction
-    
-    # sending our response object back as json
-    return flask.jsonify(response)
+    return jsonify({"prediction": prediction})
 
-
-
-# script initialization
-if __name__ == '__main__':
-    app.run(debug=True, port ='5000',host='0.0.0.0')
+if __name__ == "__main__":
+    app.run(debug=True, port=5000)

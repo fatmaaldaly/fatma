@@ -1,17 +1,23 @@
-FROM python:3.6-jessie
+# Use Python 3.10-slim as the base image
+FROM python:3.10-slim
 
+# Label for maintaining the Dockerfile (you can leave or modify this)
 LABEL maintainer="https://github.com/AchilleasKn"
 
-RUN pip3 install --upgrade pip
-RUN apt-get update
-RUN apt-get -y install python3-pip
+# Upgrade pip
+RUN pip install --upgrade pip
 
-# copy all files of the current directory to the folder /app
-COPY . /app
+# Set the working directory in the container
 WORKDIR /app
 
-# install requiremtnts
-RUN pip3 install -r requirements.txt
+# Copy the current directory contents into the container at /app
+COPY . /app
 
-# run the flask API
-CMD python3 api.py
+# Install dependencies from requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Expose the port Flask will run on (usually 5000)
+EXPOSE 5000
+
+# Run the Flask API
+CMD ["python", "api.py"]
